@@ -1,34 +1,34 @@
-# 使用 Python 3.11 的 slim 镜像作为基础
+# Use Python 3.11 slim image as base
 FROM python:3.11-slim
 
-# 设置工作目录
+# Set working directory
 WORKDIR /app
 
-# 安装系统依赖
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 安装 Python 依赖
+# Install Python dependencies
 RUN pip install mcpo uv
 
-# 复制项目文件
+# Copy project files
 COPY . .
 
-# 创建虚拟环境并安装依赖
+# Create virtual environment and install dependencies
 RUN uv venv && \
     . .venv/bin/activate && \
     uv pip install -e ".[dev]"
 
-# 暴露端口
+# Expose port
 EXPOSE 8811
 
-# 设置环境变量
+# Set environment variables
 ENV PROXMOX_MCP_CONFIG="/app/proxmox-config/config.json"
 ENV API_HOST="0.0.0.0"
 ENV API_PORT="8811"
 
-# 启动命令
+# Startup command
 CMD ["mcpo", "--host", "0.0.0.0", "--port", "8811", "--", \
      "/bin/bash", "-c", "cd /app && source .venv/bin/activate && python -m proxmox_mcp.server"]

@@ -1,6 +1,5 @@
-# Proxmox Manager Plus - Enhanced Proxmox MCP Server
+# ProxmoxMCP-Plus - Enhanced Proxmox MCP Server
 
-![ProxmoxMCP](https://github.com/user-attachments/assets/e32ab79f-be8a-420c-ab2d-475612150534)
 
 An enhanced Python-based Model Context Protocol (MCP) server for interacting with Proxmox virtualization platforms. This project is built upon **[canvrno/ProxmoxMCP](https://github.com/canvrno/ProxmoxMCP)** with numerous new features and improvements, providing complete OpenAPI integration and more powerful virtualization management capabilities.
 
@@ -65,7 +64,6 @@ This project is built upon the excellent open-source project [ProxmoxMCP](https:
 - 🌐 OpenAPI REST endpoints for integration
 - 📡 11 fully functional API endpoints
 
-https://github.com/user-attachments/assets/1b5f42f7-85d5-4918-aca4-d38413b0e82b
 
 ## Installation
 
@@ -85,11 +83,7 @@ Before starting, ensure you have:
 1. Clone and set up environment:
    ```bash
    # Clone repository
-   cd ~/Documents/Cline/MCP  # For Cline users
-   # OR
-   cd your/preferred/directory  # For manual installation
-   
-   git clone https://github.com/your-username/ProxmoxMCP-Plus.git
+   git clone https://github.com/RekklesNA/ProxmoxMCP-Plus.git
    cd ProxmoxMCP-Plus
 
    # Create and activate virtual environment
