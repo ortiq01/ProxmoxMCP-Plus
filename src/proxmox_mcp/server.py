@@ -36,7 +36,13 @@ from .tools.definitions import (
     GET_NODES_DESC,
     GET_NODE_STATUS_DESC,
     GET_VMS_DESC,
+    CREATE_VM_DESC,
     EXECUTE_VM_COMMAND_DESC,
+    START_VM_DESC,
+    STOP_VM_DESC,
+    SHUTDOWN_VM_DESC,
+    RESET_VM_DESC,
+    DELETE_VM_DESC,
     GET_CONTAINERS_DESC,
     GET_STORAGE_DESC,
     GET_CLUSTER_STATUS_DESC
@@ -73,7 +79,7 @@ class ProxmoxMCPServer:
         
         Initializes and registers all available tools with the MCP server:
         - Node management tools (list nodes, get status)
-        - VM operation tools (list VMs, execute commands)
+        - VM operation tools (list VMs, execute commands, power management)
         - Storage management tools (list storage)
         - Cluster tools (get cluster status)
         
@@ -97,6 +103,19 @@ class ProxmoxMCPServer:
         def get_vms():
             return self.vm_tools.get_vms()
 
+        @self.mcp.tool(description=CREATE_VM_DESC)
+        def create_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="New VM ID number (e.g. '200', '300')")],
+            name: Annotated[str, Field(description="VM name (e.g. 'my-new-vm', 'web-server')")],
+            cpus: Annotated[int, Field(description="Number of CPU cores (e.g. 1, 2, 4)", ge=1, le=32)],
+            memory: Annotated[int, Field(description="Memory size in MB (e.g. 2048 for 2GB)", ge=512, le=131072)],
+            disk_size: Annotated[int, Field(description="Disk size in GB (e.g. 10, 20, 50)", ge=5, le=1000)],
+            storage: Annotated[Optional[str], Field(description="Storage name (optional, will auto-detect)", default=None)] = None,
+            ostype: Annotated[Optional[str], Field(description="OS type (optional, default: 'l26' for Linux)", default=None)] = None
+        ):
+            return self.vm_tools.create_vm(node, vmid, name, cpus, memory, disk_size, storage, ostype)
+
         @self.mcp.tool(description=EXECUTE_VM_COMMAND_DESC)
         async def execute_vm_command(
             node: Annotated[str, Field(description="Host node name (e.g. 'pve1', 'proxmox-node2')")],
@@ -104,6 +123,43 @@ class ProxmoxMCPServer:
             command: Annotated[str, Field(description="Shell command to run (e.g. 'uname -a', 'systemctl status nginx')")]
         ):
             return await self.vm_tools.execute_command(node, vmid, command)
+
+        # VM Power Management tools
+        @self.mcp.tool(description=START_VM_DESC)
+        def start_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="VM ID number (e.g. '101')")]
+        ):
+            return self.vm_tools.start_vm(node, vmid)
+
+        @self.mcp.tool(description=STOP_VM_DESC)
+        def stop_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="VM ID number (e.g. '101')")]
+        ):
+            return self.vm_tools.stop_vm(node, vmid)
+
+        @self.mcp.tool(description=SHUTDOWN_VM_DESC)
+        def shutdown_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="VM ID number (e.g. '101')")]
+        ):
+            return self.vm_tools.shutdown_vm(node, vmid)
+
+        @self.mcp.tool(description=RESET_VM_DESC)
+        def reset_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="VM ID number (e.g. '101')")]
+        ):
+            return self.vm_tools.reset_vm(node, vmid)
+
+        @self.mcp.tool(description=DELETE_VM_DESC)
+        def delete_vm(
+            node: Annotated[str, Field(description="Host node name (e.g. 'pve')")],
+            vmid: Annotated[str, Field(description="VM ID number (e.g. '998')")],
+            force: Annotated[bool, Field(description="Force deletion even if VM is running", default=False)] = False
+        ):
+            return self.vm_tools.delete_vm(node, vmid, force)
 
         # Storage tools
         @self.mcp.tool(description=GET_STORAGE_DESC)

@@ -65,11 +65,13 @@ class ClusterTools(ProxmoxTool):
         """
         try:
             result = self.proxmox.cluster.status.get()
+        
+            first_item = result[0] if result and len(result) > 0 else {}
             status = {
-                "name": result[0].get("name") if result else None,
-                "quorum": result[0].get("quorate"),
-                "nodes": len([node for node in result if node.get("type") == "node"]),
-                "resources": [res for res in result if res.get("type") == "resource"]
+                "name": first_item.get("name") if first_item else None,
+                "quorum": first_item.get("quorate") if first_item else None,
+                "nodes": len([node for node in result if node.get("type") == "node"]) if result else 0,
+                "resources": [res for res in result if res.get("type") == "resource"] if result else []
             }
             return self._format_response(status, "cluster")
         except Exception as e:

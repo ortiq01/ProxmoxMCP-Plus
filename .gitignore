@@ -57,5 +57,8 @@ coverage.xml
 # UV
 .uv/
 
+
 # Local configuration
 config/config.json
+proxmox-config/config.json
+**/config.json
