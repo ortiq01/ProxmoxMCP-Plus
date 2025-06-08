@@ -1,0 +1,32 @@
+services:
+  mcp-proxmox:
+    build: .
+    container_name: mcp-proxmox
+    ports:
+      - "8811:8811"
+    volumes:
+      - ./proxmox-config:/app/proxmox-config:ro
+    environment:
+      - PROXMOX_MCP_CONFIG=/app/proxmox-config/config.json
+      - API_HOST=0.0.0.0
+      - API_PORT=8811
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8811/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - proxmox-network
+
+  # If you need the iac-memory service as well
+  iac-memory:
+    build: ./iac-memory  # Assuming there's a Dockerfile in this directory
+    container_name: iac-memory
+    restart: unless-stopped
+    networks:
+      - proxmox-network
+
+networks:
+  proxmox-network:
+    driver: bridge
